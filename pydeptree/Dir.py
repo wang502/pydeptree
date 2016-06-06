@@ -1,8 +1,9 @@
 """
 pydeptree
 
-dir_dfs.py
+Dir.py
 
+-- A directory object that porcess all the .py file implementations within the current directory
 -- traverse the folder using DFS and visit every .py files --
 
 @By Seth (Xiaohui) Wang
@@ -23,13 +24,13 @@ class Dir():
     """
         Dir() object represents a directory and its hierachy child file and child directories
     """
-
     def __init__(self, d):
         # parent directory to visit
         self.dir = d
 
         # key value pair for a specific file and its implemented functions
         self.file_funcs = {}
+        self.dir_dfs()
 
     def dir_dfs(self):
         # array of all files
@@ -104,11 +105,12 @@ class Dir():
                         """ extract arguments of function """
                         args = _extract_args(line)
                         f.args = args
-
                         cur_func = f
 
+                        func_cross_line = True
+
                 # class
-                elif re.search(r"^class.+:", line):
+                elif re.search(r"\s*class.+:", line):
                     cur_class = self.add_class(cur_class, file_dir)
 
                     #print file_dir
@@ -122,10 +124,11 @@ class Dir():
                     if cur_func != None:
                         for arg in args:
                             cur_func.add_arg(arg)
-                    if cur_class != None:
-                        cur_class.add_func(f)
-                    func_cross_line = False
-
+                    if line.find(")") != -1:
+                        func_cross_line = False
+                        if cur_class != None:
+                            cur_class.add_func(cur_func)
+                        cur_func = None
 
     def add_class(self, cur_class, file_dir):
         if cur_class != None:
@@ -144,7 +147,7 @@ if __name__ == "__main__":
 
     # unit test for Dir()
     d = Dir("/Users/Xiaohui/Desktop/contribution/slack-sql")
-    d.dir_dfs()
+    # d.dir_dfs()
     for (k, v) in d.file_funcs.items():
         print k
         for item in v:

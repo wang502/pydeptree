@@ -32,7 +32,7 @@ def _extract_args(line):
     elif line.find(")") != -1:
         right = line.index(")")
         line = line[:right]
-    
+        
     args = line.split(",")
     for arg in args:
         arg = arg.replace(" ", "")

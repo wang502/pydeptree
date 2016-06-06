@@ -18,7 +18,7 @@ class func():
         self.args.append(arg)
 
     def __str__(self):
-        s = "-- " + self.name + "("
+        s = self.name + "("
         for arg in self.args:
             s += arg + ","
         s = s[:len(s)-1]
@@ -37,5 +37,5 @@ class Class():
     def __str__(self):
         s = "class " + self.name + "()\n"
         for func in self.funcs:
-            s += "  " + str(func)
+            s += " -- " + str(func)
         return s
