@@ -78,7 +78,7 @@ class Dir():
                     else:
                         self.file_funcs[file_dir].append(f)
 
-                # function within a class
+                # function within a class or function with more indentations
                 elif re.match(r"\s+def ", line):
                     print file_dir
                     print line
@@ -93,7 +93,7 @@ class Dir():
                         args = _extract_args(line)
                         f.args = args
 
-                        if cur_class != None:
+                        if cur_class != None and line.find("self") != -1:
                             cur_class.add_func(f)
 
                     # function header that occupies at leaset 2 lines
@@ -126,7 +126,7 @@ class Dir():
                             cur_func.add_arg(arg)
                     if line.find(")") != -1:
                         func_cross_line = False
-                        if cur_class != None:
+                        if cur_class != None and line.find("self") != -1:
                             cur_class.add_func(cur_func)
                         cur_func = None
 
