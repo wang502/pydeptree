@@ -13,6 +13,7 @@ class func():
     def __init__(self, name):
         self.name = name
         self.args = []
+        self.type = "func"
 
     def add_arg(self, arg):
         self.args.append(arg)
@@ -30,6 +31,7 @@ class Class():
     def __init__(self, name):
         self.name = name
         self.funcs = []
+        self.type = "class"
 
     def add_func(self, func):
         self.funcs.append(func)

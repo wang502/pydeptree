@@ -58,7 +58,7 @@ class Dir():
         with open(file_dir) as fp:
             for line in fp:
                 # independent function
-                if re.search(r"^def.+:", line):
+                if re.match(r"^def .+:", line):
                     cur_class = self.add_class(cur_class, file_dir)
 
                     #print file_dir
@@ -73,15 +73,15 @@ class Dir():
                     args = _extract_args(line)
 
                     f.args = args
-                    if file_dir not in self.file_funcs:
-                        self.file_funcs[file_dir] = [f]
+                    if file_dir.replace(self.dir, "") not in self.file_funcs:
+                        self.file_funcs[file_dir.replace(self.dir, "")] = [f]
                     else:
-                        self.file_funcs[file_dir].append(f)
+                        self.file_funcs[file_dir.replace(self.dir, "")].append(f)
 
                 # function within a class or function with more indentations
-                elif re.match(r"\s+def ", line):
-                    print file_dir
-                    print line
+                elif re.search(r"\s+def .+:", line):
+                    #print file_dir
+                    #print line
 
                     if line.find("(") != -1 and line.find(")") != -1:
                         """extract function name"""
@@ -110,7 +110,7 @@ class Dir():
                         func_cross_line = True
 
                 # class
-                elif re.search(r"\s*class.+:", line):
+                elif re.search(r"\s*class .+:", line):
                     cur_class = self.add_class(cur_class, file_dir)
 
                     #print file_dir
@@ -132,23 +132,43 @@ class Dir():
 
     def add_class(self, cur_class, file_dir):
         if cur_class != None:
-            if file_dir not in self.file_funcs:
-                self.file_funcs[file_dir] = [cur_class]
+            if file_dir.replace(self.dir, "") not in self.file_funcs:
+                self.file_funcs[file_dir.replace(self.dir, "")] = [cur_class]
             else:
-                self.file_funcs[file_dir].append(cur_class)
+                self.file_funcs[file_dir.replace(self.dir, "")].append(cur_class)
         return None
+
+    def prettify_file_funcs(self):
+        strs = self.dir + "\n"
+        for (k, v) in self.file_funcs.items():
+            # number of slashes denotes how far this dir is from home dir
+            num_slash = len(k) - len(k.replace("/", ""))
+            strs += " "*num_slash
+            strs += "|\n"
+            strs += " "*num_slash
+            strs += "+-- "
+            strs +=  k + "\n"
+            for item in v:
+                strs += " "*num_slash
+                strs += "  "
+                if item.type == "func":
+                    strs += str(item)
+                else:
+                    strs += "class " + item.name + "\n"
+                    for func in item.funcs:
+                        strs += " "*(num_slash+6)
+                        strs += str(func)
+        print strs
 
 if __name__ == "__main__":
 
     # unit test for is_py()
-    print is_py("utils.py")
-    print is_py("utilespy")
-    print is_py("filename")
+    #print is_py("utils.py")
+    #print is_py("utilespy")
+    #print is_py("filename")
 
     # unit test for Dir()
-    d = Dir("/Users/Xiaohui/Desktop/contribution/slack-sql")
+    d = Dir("/Users/Xiaohui/Desktop/contribution/Toptal-API")
     # d.dir_dfs()
-    for (k, v) in d.file_funcs.items():
-        print k
-        for item in v:
-            print item
+
+    d.prettify_file_funcs()
