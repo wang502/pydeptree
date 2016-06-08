@@ -1,11 +1,8 @@
 """
 pydeptree
-
 Dir.py
-
 -- A directory object that porcess all the .py file implementations within the current directory
 -- traverse the folder using DFS and visit every .py files --
-
 @By Seth (Xiaohui) Wang
 @email: sethwang199418@gmail.com
 """
@@ -44,6 +41,8 @@ class Dir():
             cur = s.pop()
             if isfile(cur) and is_py(cur):
                 self.visit_file(cur)
+                if cur.replace(self.dir, "") not in self.file_funcs:
+                    self.file_funcs[cur.replace(self.dir, "")] = []
             elif isfile(cur):
                 pass
             else:
@@ -130,6 +129,7 @@ class Dir():
                             cur_class.add_func(cur_func)
                         cur_func = None
 
+
     def add_class(self, cur_class, file_dir):
         if cur_class != None:
             if file_dir.replace(self.dir, "") not in self.file_funcs:
@@ -138,26 +138,46 @@ class Dir():
                 self.file_funcs[file_dir.replace(self.dir, "")].append(cur_class)
         return None
 
-    def prettify_file_funcs(self):
-        strs = self.dir + "\n"
-        for (k, v) in self.file_funcs.items():
-            # number of slashes denotes how far this dir is from home dir
-            num_slash = len(k) - len(k.replace("/", ""))
-            strs += " "*num_slash
-            strs += "|\n"
-            strs += " "*num_slash
-            strs += "+-- "
-            strs +=  k + "\n"
-            for item in v:
-                strs += " "*num_slash
-                strs += "  "
-                if item.type == "func":
-                    strs += str(item)
-                else:
-                    strs += "class " + item.name + "\n"
-                    for func in item.funcs:
-                        strs += " "*(num_slash+6)
-                        strs += str(func)
+    # show the skelton of the project
+    def show(self):
+        s = []
+        num_slash = 1
+        strs = ""
+
+        strs += " "*num_slash*4
+        strs += "|\n"
+
+        for f in listdir(self.dir):
+            s.append((join(self.dir, f), 1))
+
+            # DFS to visit every file and chile folder
+        while not len(s) == 0:
+            cur = s.pop()
+            #num_slash = len(cur) - len(cur.replace('/', ''))
+            num_slash = cur[1]
+            if isfile(cur[0]) and is_py(cur[0]):
+                strs += " "*num_slash*4
+                strs +=  cur[0].replace(self.dir, "") + "\n"
+                print cur[0], "cur"
+                items = self.file_funcs[cur[0].replace(self.dir, "")]
+                for item in items:
+                    strs += " "*num_slash*4
+                    strs += " "
+                    if item.type == "func":
+                        strs += str(item)
+                    else:
+                        strs += "class " + item.name + "\n"
+                        for func in item.funcs:
+                            strs += " "*(num_slash*6)
+                            strs += str(func)
+            elif isfile(cur[0]):
+                pass
+            else:
+                strs += " "*num_slash*4
+                strs += "+-- "
+                strs += cur[0].replace(self.dir, "") + "\n"
+                for f in listdir(cur[0]):
+                    s.append((join(cur[0], f), cur[1]+1))
         print strs
 
 if __name__ == "__main__":
@@ -169,6 +189,4 @@ if __name__ == "__main__":
 
     # unit test for Dir()
     d = Dir("/Users/Xiaohui/Desktop/contribution/Toptal-API")
-    # d.dir_dfs()
-
-    d.prettify_file_funcs()
+    d.show()
