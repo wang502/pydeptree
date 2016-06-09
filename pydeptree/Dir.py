@@ -60,12 +60,8 @@ class Dir():
                 if re.match(r"^def .+:", line):
                     cur_class = self.add_class(cur_class, file_dir)
 
-                    #print file_dir
-                    #print line
-
                     """ extract function name """
                     func_name = _extract_func_name(line)
-                    #print func_name
                     f = func(func_name)
 
                     """ extract arguments of function """
@@ -79,13 +75,9 @@ class Dir():
 
                 # function within a class or function with more indentations
                 elif re.search(r"\s+def .+:", line):
-                    #print file_dir
-                    #print line
-
                     if line.find("(") != -1 and line.find(")") != -1:
                         """extract function name"""
                         func_name = _extract_func_name(line)
-                        #print func_name
                         f = func(func_name)
 
                         """ extract arguments of function """
@@ -99,7 +91,6 @@ class Dir():
                     elif line.find("(") != -1:
                         """extract function name"""
                         func_name = _extract_func_name(line)
-                        #print func_name
                         f = func(func_name)
                         """ extract arguments of function """
                         args = _extract_args(line)
@@ -111,11 +102,7 @@ class Dir():
                 # class
                 elif re.search(r"\s*class .+:", line):
                     cur_class = self.add_class(cur_class, file_dir)
-
-                    #print file_dir
-                    #print line
                     class_name = _extract_class_name(line)
-                    #print class_name
                     cur_class = Class(class_name)
 
                 elif func_cross_line:
@@ -128,6 +115,7 @@ class Dir():
                         if cur_class != None and line.find("self") != -1:
                             cur_class.add_func(cur_func)
                         cur_func = None
+            fp.close()
 
 
     def add_class(self, cur_class, file_dir):
@@ -144,6 +132,7 @@ class Dir():
         num_slash = 1
         strs = ""
 
+        strs += self.dir.split('/')[-1] + "\n"
         strs += " "*num_slash*4
         strs += "|\n"
 
@@ -153,29 +142,28 @@ class Dir():
             # DFS to visit every file and chile folder
         while not len(s) == 0:
             cur = s.pop()
-            #num_slash = len(cur) - len(cur.replace('/', ''))
-            num_slash = cur[1]
+            depth = cur[1]
             if isfile(cur[0]) and is_py(cur[0]):
-                strs += " "*num_slash*4
-                strs +=  cur[0].replace(self.dir, "") + "\n"
-                print cur[0], "cur"
+                strs += " "*depth*4
+                strs += "+-- " + cur[0].split('/')[-1] + "\n"
                 items = self.file_funcs[cur[0].replace(self.dir, "")]
                 for item in items:
-                    strs += " "*num_slash*4
+                    strs += " "*depth*5
                     strs += " "
                     if item.type == "func":
-                        strs += str(item)
+                        strs += "|-- " + str(item)
                     else:
-                        strs += "class " + item.name + "\n"
+                        strs += "|-- class " + item.name + "\n"
                         for func in item.funcs:
-                            strs += " "*(num_slash*6)
+                            strs += " "*(depth*7)
                             strs += str(func)
-            elif isfile(cur[0]):
+            elif isfile(cur[0]) or re.search('.git$', cur[0]):
                 pass
             else:
-                strs += " "*num_slash*4
+                strs += " "*depth*4
                 strs += "+-- "
-                strs += cur[0].replace(self.dir, "") + "\n"
+                name = cur[0].split('/')[-1] + "/"
+                strs += name + "\n"
                 for f in listdir(cur[0]):
                     s.append((join(cur[0], f), cur[1]+1))
         print strs
