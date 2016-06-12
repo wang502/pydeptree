@@ -167,6 +167,25 @@ class Dir():
                 for f in listdir(cur[0]):
                     s.append((join(cur[0], f), cur[1]+1))
         print strs
+    '''
+    # Find out what other functions the given functions rely on
+    def depend_on(self, name):
+        result = {}
+        targeted_file = []
+        for item in self.file_funcs.items():
+            for func in item[1]:
+                if func.type == "func" and func.name == name:
+                    targeted_file.append(item[0])
+                elif func.type == "class":
+                    for f in func.funcs:
+                        if f.name == name:
+                            targeted_file.append(item[0])
+        print targeted_file
+
+        for file_dir in targeted_file:
+            pf = pyfile(file_dir)
+            pf.find_depend_funcs(name, self.file_funcs, result)
+    '''
 
 if __name__ == "__main__":
 
