@@ -23,7 +23,7 @@ class func():
         for arg in self.args:
             s += arg + ","
         s = s[:len(s)-1]
-        s += ")\n"
+        s += ")"
         return s
 
 class Class():

@@ -10,6 +10,7 @@ Dir.py
 from os import listdir
 from os.path import isfile, join
 import re
+from pyfile import pyfile
 from Class import Class, func
 from utils import _extract_func_name, _extract_class_name, _extract_args
 
@@ -145,18 +146,18 @@ class Dir():
             depth = cur[1]
             if isfile(cur[0]) and is_py(cur[0]):
                 strs += " "*depth*4
-                strs += "+-- " + cur[0].split('/')[-1] + "\n"
+                strs += "" + cur[0].split('/')[-1] + "\n"
                 items = self.file_funcs[cur[0].replace(self.dir, "")]
                 for item in items:
                     strs += " "*depth*5
                     strs += " "
                     if item.type == "func":
-                        strs += "|-- " + str(item)
+                        strs += "'" + str(item) + "'\n"
                     else:
                         strs += "|-- class " + item.name + "\n"
                         for func in item.funcs:
                             strs += " "*(depth*7)
-                            strs += str(func)
+                            strs += "'" + str(func) + "'\n"
             elif isfile(cur[0]) or re.search('.git$', cur[0]):
                 pass
             else:

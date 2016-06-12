@@ -4,6 +4,7 @@
 Command line interface to look up project skeleton. It is also for looking the dependency between different .py files.
 
 ##### Example output when looking up project skeleton
+Move into the project folder you want to inspect, then run
 ```
   $ python Dir.py
 ```
