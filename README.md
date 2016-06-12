@@ -1,4 +1,4 @@
-## Pydeptree
+## Pyskeleton
 
 ##### About
 Command line interface to look up project skeleton. It is also for looking the dependency between different .py files.
